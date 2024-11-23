@@ -29,7 +29,7 @@ import numpy as np
 text = "The quick brown fox jumps over the lazy dog!"
 
 # Write a list comprehension to tokenize the text and remove punctuation
-tokens = _ # Your code here
+tokens = text.lower().split()
 
 # Expected output: ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
 print(tokens)
@@ -45,8 +45,14 @@ print(tokens)
 # Your code here:
 # -----------------------------------------------
 def tokenize(string: str) -> list:
-    pass # Your code
+    punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+    string = ''.join(tok for tok in string if tok not in punc).lower().split()
+    return sorted(string)
 
+def tokenize2(string: str) -> list:
+    punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+    string = ''.join(tok for tok in string if tok not in punc).lower().split()
+    return string
 
 # -----------------------------------------------
 
@@ -74,7 +80,7 @@ def tokenize(string: str) -> list:
 
 # Your code here:
 # -----------------------------------------------
-word_frequencies = _ # Your code here
+word_frequencies = {tok: tokens.count(tok) for tok in tokens}
 
 # Expected output example: {'the': 2, 'quick': 1, ...}
 print(word_frequencies)
@@ -90,7 +96,9 @@ print(word_frequencies)
 # Your code here:
 # -----------------------------------------------
 def token_counts(string: str, k: int = 1) -> dict:
-    pass # Your code
+    tokens = string.split()
+    word_frequencies_k = {tok: tokens.count(tok) for tok in tokens if tokens.count(tok) > k}
+    return word_frequencies_k
 
 # test:
 text_hist = {'the': 2, 'quick': 1, 'brown': 1, 'fox': 1, 'jumps': 1, 'over': 1, 'lazy': 1, 'dog': 1}
@@ -121,7 +129,7 @@ all(text_hist[key] == value for key, value in token_counts(text).items())
 
 # Your code here:
 # -----------------------------------------------
-token_to_id = _ # Your code here
+token_to_id = {list(set(tokens))[i]: i for i in range(len(list(set(tokens))))}
 
 # Expected output: {'dog': 0, 'quick': 1, 'fox': 2, 'the': 3, 'over': 4, 'lazy': 5, 'brown': 6, 'jumps': 7}
 print(token_to_id)
@@ -133,11 +141,11 @@ print(token_to_id)
 #
 # Your code here:
 # -----------------------------------------------
-id_to_token = _ # Your code here
+id_to_token = {token_to_id[key] :key for key in token_to_id.keys()}
 
 # tests: 
 # test 1
-assert id_to_token[token_to_id['dog']] == 'dog'
+assert id_to_token[token_to_id['dog!']] == 'dog!'
 # test 2
 assert token_to_id[id_to_token[4]] == 4
 # test 3
@@ -154,8 +162,10 @@ assert all(id_to_token[token_to_id[key]]==key for key in token_to_id) and all(to
 # Your code here:
 # -----------------------------------------------
 def make_vocabulary_map(documents: list) -> tuple:
-    # Hint: use your tokenize function
-    pass # Your code
+    vocab = sum([tokenize(string) for string in documents],[])
+    token_to_id = {list(set(vocab))[i]: i for i in range(len(list(set(vocab))))}
+    id_to_token = {token_to_id[key]: key for key in token_to_id.keys()}
+    return token_to_id, id_to_token
 
 # Test
 t2i, i2t = make_vocabulary_map([text])
@@ -175,7 +185,11 @@ all(i2t[t2i[tok]] == tok for tok in t2i) # should be True
 # -----------------------------------------------
 def tokenize_and_encode(documents: list) -> list:
     # Hint: use your make_vocabulary_map and tokenize function
-    pass # Your code
+    w2i, i2w = make_vocabulary_map(documents)
+    #enc = 1
+    documents = list(map(tokenize2, documents))
+    enc = list(map(lambda s: list(map(lambda w: w2i[w], s)), documents))
+    return enc, w2i, i2w
 
 # Test:
 enc, t2i, i2t = tokenize_and_encode([text, 'What a luck we had today!'])
@@ -201,7 +215,7 @@ enc, t2i, i2t = tokenize_and_encode([text, 'What a luck we had today!'])
 
 # Your code here:
 # -----------------------------------------------
-sigmoid = _ # Your code
+sigmoid = lambda x: 1 / (1 + np.exp(-x))
 
 # Test:
 np.all(sigmoid(np.log([1, 1/3, 1/7])) == np.array([1/2, 1/4, 1/8]))
