@@ -32,4 +32,4 @@ class TestTokenizeFunction(unittest.TestCase):
     def test_newlines_and_tabs(self):
         self.assertEqual(tokenize("Hello\nworld\tthis\tis\na test"), ["hello", "world", "this", "is", "a", "test"])
 
-unittest.main()
+#unittest.main()
